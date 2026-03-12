@@ -15,7 +15,6 @@ export class SceneManager {
         this.canvas = _canvas;
     }
 
-
     private async switchScene(newScene: BABYLON.Scene) {
         if (this.currentScene) {
             this.currentScene.detachControl();
@@ -26,12 +25,14 @@ export class SceneManager {
         this.currentScene.attachControl();
     }
 
+    //Render Scene From LobbyScene.ts
     public async goToLobby() {
         const scene = await createLobbyScene(this.engine, this.canvas)
 
          this.switchScene(scene);
     }
 
+    //Render Scene From GameScene.ts
     public async goToGame() {
         const scene = await createGameScene(this.engine, this.canvas)
 

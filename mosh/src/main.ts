@@ -9,7 +9,7 @@ const engine = new BABYLON.Engine(canvas);
 
 const sceneManager = new SceneManager(engine, canvas);
 
-await sceneManager.goToLobby();
+await sceneManager.goToGame();
 
 
 engine.runRenderLoop(function() 
