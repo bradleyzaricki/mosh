@@ -15,7 +15,7 @@ await sceneManager.goToGame();
 engine.runRenderLoop(function() 
 {
     sceneManager.currentScene?.render();
-    fpsDiv.innerText = "FPS: " + engine.getFps().toFixed(2);
+    fpsDiv.innerText = "FT: " + engine.getDeltaTime().toFixed(2);
 });
 window.addEventListener("resize", function () {
     engine.resize();

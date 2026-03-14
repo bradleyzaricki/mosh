@@ -7,7 +7,14 @@ export async function createGameScene(
 ) {
     const scene = new BABYLON.Scene(engine);
     const player = new Player(scene,canvas)
+    const sceneInstr = new BABYLON.SceneInstrumentation(scene);
+    sceneInstr.captureFrameTime = true;
+    sceneInstr.captureRenderTime = true;
+    sceneInstr.captureActiveMeshesEvaluationTime = true;
 
+    const engineInstr = new BABYLON.EngineInstrumentation(engine);
+    engineInstr.captureGPUFrameTime = true;
+    scene.collisionsEnabled = true;
     //Render Test Scene
     {
     const lights = [
@@ -23,9 +30,23 @@ export async function createGameScene(
 
     const box = BABYLON.MeshBuilder.CreateBox("box", { size: 2 }, scene);
     box.position.y = 1;
-    }
+    box.position.z = 5;
+    box.checkCollisions = true;
 
-    BABYLON.MeshBuilder.CreateGround("ground", { width: 50, height: 50 }, scene);
+    }
+setInterval(() => {
+    console.log("fps:", engine.getFps());
+    console.log("delta ms:", engine.getDeltaTime());
+
+    console.log("frame:", sceneInstr.frameTimeCounter.current);
+    console.log("render:", sceneInstr.renderTimeCounter.current);
+    console.log("active meshes eval:", sceneInstr.activeMeshesEvaluationTimeCounter.current);
+    console.log("gpu frame:", engineInstr.gpuFrameTimeCounter.current);
+
+    console.log("meshes:", scene.meshes.length);
+}, 1000);
+    const ground = BABYLON.MeshBuilder.CreateGround("ground", { width: 50, height: 50 }, scene);
+    ground.checkCollisions = true;
 
 
 
