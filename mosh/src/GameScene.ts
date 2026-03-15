@@ -1,5 +1,7 @@
 import * as BABYLON from "@babylonjs/core";
+import "@babylonjs/loaders";
 import { Player } from "./Player";
+import { getPlayerChunk, updateChunksAroundPlayer } from "./ChunkManager";
 
 export async function createGameScene(
     engine: BABYLON.Engine,
@@ -7,6 +9,7 @@ export async function createGameScene(
 ) {
     const scene = new BABYLON.Scene(engine);
     const player = new Player(scene,canvas)
+    player.playerbody.position.y = 50;
     const sceneInstr = new BABYLON.SceneInstrumentation(scene);
     sceneInstr.captureFrameTime = true;
     sceneInstr.captureRenderTime = true;
@@ -16,16 +19,14 @@ export async function createGameScene(
     engineInstr.captureGPUFrameTime = true;
     scene.collisionsEnabled = true;
     //Render Test Scene
-    {
+    
     const lights = [
-    new BABYLON.PointLight ("light", new BABYLON.Vector3(4, 2, 0), scene),
-    new BABYLON.PointLight ("light", new BABYLON.Vector3(-4, 2, 0), scene),
-    new BABYLON.PointLight ("light", new BABYLON.Vector3(0, 2, 4), scene),
-    new BABYLON.PointLight ("light", new BABYLON.Vector3(0, 2, -4), scene),
+    new BABYLON.PointLight ("light", new BABYLON.Vector3(0, 50, 0), scene),
+
     ]
     lights.forEach(light => {
-        light.intensity = 0.1;
-        light.diffuse = new BABYLON.Color3(1, 0, 1); 
+        light.intensity = 10000.3;
+        light.diffuse = new BABYLON.Color3(1, 1, 1); 
     });
 
     const box = BABYLON.MeshBuilder.CreateBox("box", { size: 2 }, scene);
@@ -33,20 +34,30 @@ export async function createGameScene(
     box.position.z = 5;
     box.checkCollisions = true;
 
+
+
+
+let chunkUpdateBusy = false;
+
+scene.onBeforeRenderObservable.add(async () => {
+    player.update();
+
+    const playerPos = player.playerbody.position; // or whatever your player position is
+    const current = getPlayerChunk(playerPos);
+    if (
+        !chunkUpdateBusy 
+    ) {
+        chunkUpdateBusy = true;
+
+        try {
+            await updateChunksAroundPlayer(playerPos, scene);
+                console.log(`Player chunk: ${current.x}, ${current.z}`);
+
+        } finally {
+            chunkUpdateBusy = false;
+        }
     }
-setInterval(() => {
-    console.log("fps:", engine.getFps());
-    console.log("delta ms:", engine.getDeltaTime());
-
-    console.log("frame:", sceneInstr.frameTimeCounter.current);
-    console.log("render:", sceneInstr.renderTimeCounter.current);
-    console.log("active meshes eval:", sceneInstr.activeMeshesEvaluationTimeCounter.current);
-    console.log("gpu frame:", engineInstr.gpuFrameTimeCounter.current);
-
-    console.log("meshes:", scene.meshes.length);
-}, 1000);
-    const ground = BABYLON.MeshBuilder.CreateGround("ground", { width: 50, height: 50 }, scene);
-    ground.checkCollisions = true;
+});
 
 
 

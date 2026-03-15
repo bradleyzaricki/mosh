@@ -1,8 +1,8 @@
 import * as BABYLON from "@babylonjs/core";
 import { PlayerInput } from "./PlayerInput";
 
-const SPEED = 0.1;
-const GRAVITY = -0.01;
+const SPEED = 0.3;
+const GRAVITY = -0.001;
 const JUMP_STRENGTH = 0.2;
 
 export class PlayerController {
@@ -12,7 +12,6 @@ export class PlayerController {
     playerbody: BABYLON.Mesh;
     verticalVelocity: number;
     isGrounded: boolean;
-
     private move = new BABYLON.Vector3();
     private forward = new BABYLON.Vector3();
     private right = new BABYLON.Vector3();
@@ -74,6 +73,7 @@ export class PlayerController {
             this.isGrounded = false;
         }
 
+
         this.verticalVelocity += GRAVITY;
         this.move.y = this.verticalVelocity;
 
@@ -82,5 +82,16 @@ export class PlayerController {
         this.camera.position.x = this.playerbody.position.x;
         this.camera.position.y = this.playerbody.position.y + 1.5;
         this.camera.position.z = this.playerbody.position.z;
+        this.camera.lockedTarget = null;
+
+        if(this.input.devPOV)
+        {
+        this.camera.position.x = this.playerbody.position.x;
+        this.camera.position.y = this.playerbody.position.y + 300;
+        this.camera.position.z = this.playerbody.position.z;
+        this.camera.lockedTarget = this.playerbody.position;
+
+        }
+
     }
 }

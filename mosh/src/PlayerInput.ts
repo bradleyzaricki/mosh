@@ -5,7 +5,7 @@ export class PlayerInput {
     left = false
     right = false
     jump = false
-
+    devPOV = false;
     constructor() {
 
         window.addEventListener("keydown", (e)=>{
@@ -14,6 +14,7 @@ export class PlayerInput {
             if(e.key === "a") this.left = true
             if(e.key === "d") this.right = true
             if(e.key === " ") this.jump = true
+            if(e.key === "p") this.devPOV = !this.devPOV
         })
 
         window.addEventListener("keyup", (e)=>{
